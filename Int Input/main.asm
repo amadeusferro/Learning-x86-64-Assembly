@@ -69,6 +69,7 @@ print_int:
 
 string_to_int:
     mov esi, 1
+    xor eax, eax
 
     cmp byte [edi], 32 ; ' '
     je .blank
@@ -83,8 +84,6 @@ string_to_int:
     cmp byte [edi], 48 ; '0'
     je .zeros
 
-    mov eax, 0
-
 .check_number_bounds:
     cmp byte [edi], 48 ; '0'
     jl .error
@@ -95,10 +94,12 @@ string_to_int:
 .convert_number:
     mov edx, 10
     imul edx
+    jo .error
     
-    mov ecx, [edi]
+    movzx ecx, byte [edi]
     sub cl, 48 ; '0'
-    add al, cl
+    add eax, ecx
+    jo .error
     
     inc edi
     cmp byte [edi], 0
