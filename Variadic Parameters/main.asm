@@ -27,9 +27,41 @@ my_prinf:
     ; ebp+16 = second variadic param
     ; ...
 
+    mov esi, [ebp+8]
+    mov edi, 12
 
+.process_fmt:
+    lodsb
+    cmp al, 0
+    je .end
 
+    cmp al, '%'
+    jne .print_chat
 
+    lodsb
+    cmp al, 'd'
+    je .print_int
+    cmp al, 'x'
+    je .print_hex
+    ; ... others
+
+.print_int:
+    mov eax, [ebp+edi]
+    add edi, 4
+    ; print int
+    jmp .process_fmt
+
+.print_hex:
+    mov eax, [ebp+edi]
+    add edi, 4
+    ; print hex
+    jmp .process_fmt
+
+.print_char:
+    ; normal print
+    jmp .process_fmt
+
+.end:
     mov esp, ebp
     pop ebp
     ret
