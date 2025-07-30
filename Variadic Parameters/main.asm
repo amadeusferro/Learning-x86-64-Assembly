@@ -1,6 +1,7 @@
 section .data
-    fmt db "Numbers: %d, %x", 10, 0
-    num_int dd 42
+    fmt db "Numbers: %d, %x, %d, %x", 10, 0
+    num_int_1 dd 42
+    num_int_2 dd 100
     int_buffer times 12 db 0
 
 section .text
@@ -8,40 +9,41 @@ section .text
 
 _start:
     push dword 0xDEADBEEF
-    push dword [num_int]
+    push dword [num_int_1]
+    push dword 0xDEADBEE1
+    push dword [num_int_2]
     push fmt
     call my_printf
-    add esp, 12
+    add esp, 20
 
-    ; exit(0)
     mov eax, 1
     xor ebx, ebx
     int 0x80
 
-; ===================== printf simplificado ======================
 my_printf:
     push ebp
     mov ebp, esp
-    push ebx            
-    push esi              
 
-    mov esi, [ebp+8]      
-    lea ebx, [ebp+12]      
+    push ebx
+    push esi
+
+    mov esi, [ebp+8]
+    lea ebx, [ebp+12]
 
 .process_fmt:
-    lodsb                 
+    lodsb
     test al, al
     jz .end
 
     cmp al, '%'
     jne .print_char
 
-    lodsb                  
+    lodsb
     cmp al, 'd'
     je .print_int
     cmp al, 'x'
     je .print_hex
-    jmp .process_fmt    
+    jmp .process_fmt
 
 .print_int:
     mov eax, [ebx]
@@ -60,20 +62,20 @@ my_printf:
     jmp .process_fmt
 
 .print_char:
-    push eax              
-    mov eax, 4          
-    mov ecx, esp         
-    mov edx, 1          
-    push ebx              
-    mov ebx, 1       
+    push eax
+    mov eax, 4
+    mov ecx, esp
+    mov edx, 1
+    push ebx
+    mov ebx, 1
     int 0x80
-    pop ebx              
-    pop eax            
+    pop ebx
+    pop eax
     jmp .process_fmt
 
 .end:
-    pop esi               
-    pop ebx              
+    pop esi
+    pop ebx
     mov esp, ebp
     pop ebp
     ret
