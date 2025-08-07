@@ -13,6 +13,44 @@ my_malloc:
     push rbp
     mov rbp, rsp
 
+    add rdi, 15
+    and rdi, -16
+    add rdi, 8
+
+    cmp qword [heap_start], 0
+    jne .allocate_memory
+
+.initialize_heap:
+    mov rax, 12
+    push rdi
+    xor rdi, rdi
+    syscall
+    pop rdi
+    mov [heap_start], rax
+
+.allocate_memory:
+    mov rbx, [heap_start]
+
+    mov rax, 12
+    mov r10, rdi
+    mov rdi, rbx
+    add rdi, r10
+    syscall
+
+    add rbx, r10
+    cmp rax, rbx
+    jne .error
+
+    mov [heap_start], rax
+
+    mov rax, [heap_start]
+
+    mov rax, [heap_start]
+    sub rax, r10
+    add rax, 8
+
+    jmp .done
+
 
 
 .error:
