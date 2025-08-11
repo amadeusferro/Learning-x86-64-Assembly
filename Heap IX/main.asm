@@ -21,6 +21,7 @@ _start:
     mov rsi, [pseudo_heap_ptr]
     mov rdx, 1024
     syscall
+    
 
     mov rax, 60
     xor rdi, rdi
